@@ -1,5 +1,7 @@
 <template>
-  <div class="login">这是登录页面</div>
+  <div class="login">
+    <el-button type="primary">嘻嘻</el-button>
+  </div>
 </template>
 
 <script>
