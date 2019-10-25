@@ -1,19 +1,61 @@
 <template>
   <el-container class="index">
-  <el-header>
-    <div class="logo">
-      <img src="../assets/logo.png" alt="">
-    </div>
-    <div class="main">电商后台管理系统</div>
-    <div class="logout">
-      欢迎光临~<a href="javascript:;" @click="logout">退出</a>
-    </div>
-  </el-header>
-  <el-container>
-    <el-aside width="200px">Aside</el-aside>
-    <el-main>Main</el-main>
+    <el-header>
+      <div class="logo">
+        <img src="../assets/logo.png" alt />
+      </div>
+      <div class="main">电商后台管理系统</div>
+      <div class="logout">
+        欢迎光临~
+        <a href="javascript:;" @click="logout">退出</a>
+      </div>
+    </el-header>
+    <el-container>
+      <el-aside width="200px">
+        <!-- 整个容器 -->
+        <el-menu
+          unique-opened
+          default-active="1-1"
+          class="el-menu-vertical-demo"
+          background-color="#545c64"
+          text-color="#fff"
+          active-text-color="#ffd04b"
+        >
+          <!-- 子菜单 -->
+          <el-submenu index="1">
+            <!-- 标题 -->
+            <template slot="title">
+              <i class="el-icon-location"></i>
+              <span>用户管理</span>
+            </template>
+            <!-- 内容 -->
+            <el-menu-item index="1-1">
+              <i class="el-icon-menu"></i>
+              <span slot="title"></span>
+            </el-menu-item>
+          </el-submenu>
+
+          <el-submenu index="2">
+            <!-- 标题 -->
+            <template slot="title">
+              <i class="el-icon-location"></i>
+              <span>权限管理</span>
+            </template>
+            <!-- 内容 -->
+            <el-menu-item index="2-1">
+              <i class="el-icon-menu"></i>
+              <span slot="title">角色列表</span>
+            </el-menu-item>
+            <el-menu-item index="2-2">
+              <i class="el-icon-menu"></i>
+              <span slot="title">权限列表</span>
+            </el-menu-item>
+          </el-submenu>
+        </el-menu>
+      </el-aside>
+      <el-main>Main</el-main>
+    </el-container>
   </el-container>
-</el-container>
 </template>
 
 <script>
@@ -24,51 +66,58 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-        localStorage.removeItem('token')
-        this.$router.push('/login')
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        })
-      }).catch(() => {
-        console.log()
       })
+        .then(() => {
+          localStorage.removeItem('token')
+          this.$router.push('/login')
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        })
+        .catch(() => {
+          console.log()
+        })
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-*{
+* {
   padding: 0;
   margin: 0;
 }
-.index{
+.index {
   height: 100%;
-  .el-header{
+  .el-header {
     display: flex;
     background: #d8d8d8;
     line-height: 60px;
     padding: 0 20px;
-    img{
+    img {
       height: 40px;
       margin-top: 10px;
     }
-    .main{
+    .main {
       font-weight: 700;
       color: #545c64;
       flex: 1;
       text-align: center;
       font-size: 24px;
     }
-    .logout{
+    .logout {
       font-weight: 600;
     }
-    a{
+    a {
       color: orange;
     }
   }
+  .el-aside {
+    background: #545c64;
+    .el-menu {
+      border: 0
+    }
+  }
 }
-
 </style>
