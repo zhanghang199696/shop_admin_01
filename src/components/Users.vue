@@ -1,5 +1,6 @@
 <template>
   <div class="users">
+
     <el-table border :data="userlist">
       <el-table-column label="姓名" prop="username"></el-table-column>
       <el-table-column label="邮箱" prop="email"></el-table-column>
@@ -17,6 +18,16 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 分页 -->
+    <el-pagination
+     @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="pagenum"
+      :page-sizes="[2, 4, 6, 8,10]"
+      :page-size="pagesize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
   </div>
 </template>
 
@@ -30,8 +41,9 @@ export default {
     return {
       userlist: [],
       query: '',
-      pagenum: 1,
-      pagesize: 4
+      pagenum: 1, // 当前页
+      pagesize: 2, // 每页条数
+      total: 0
     }
   },
   methods: {
@@ -49,14 +61,26 @@ export default {
         })
         .then(res => {
           const { data, meta } = res.data
-          console.log(res.data)
 
           if (meta.status === 200) {
             this.userlist = data.users
+            this.total = data.total
+            // console.log(res.data)
           } else {
             this.$message.error(meta.msg)
           }
         })
+    },
+    // 处理每页条数的变化
+    handleSizeChange (val) {
+      // console.log(val)
+      this.pagesize = val
+    },
+    // 处理当前页的变化
+    handleCurrentChange (val) {
+      console.log(val)
+      this.pagenum = val
+      this.getUserList()
     }
   }
 }
