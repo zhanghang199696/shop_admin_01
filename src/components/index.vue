@@ -64,23 +64,24 @@
 <script>
 export default {
   methods: {
-    logout () {
-      this.$confirm('尊敬的用户,您确认要推出吗？', '温馨提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      })
-        .then(() => {
+    async logout () {
+      try {
+        const res = await this.$confirm('尊敬的用户,您确认要推出吗？', '温馨提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+        if (res) {
           localStorage.removeItem('token')
           this.$router.push('/login')
           this.$message({
             type: 'success',
-            message: '删除成功!'
+            message: '退出成功!'
           })
-        })
-        .catch(() => {
-          console.log()
-        })
+        }
+      } catch (e) {
+        console.log(e)
+      }
     }
   }
 }
@@ -121,6 +122,9 @@ export default {
     .el-menu {
       border: 0;
     }
+  }
+  .el-main{
+    background: #ecf0f1
   }
 }
 </style>

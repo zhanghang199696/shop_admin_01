@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 export default {
   data () {
     return {
@@ -52,43 +52,24 @@ export default {
       this.$refs.form.resetFields()
     },
     // 点击登录去首页
-    login () {
-      this.$refs.form.validate(isValid => {
-        if (!isValid) return
-
-        // axios({
-        //   method: 'post',
-        //   url: 'http://localhost:8888/api/private/v1/login',
-        //   data: this.form
-        // }).then(res => {
-        //   console.log(res.data)
-        //   const { meta } = res.data
-
-        //   if (meta.status === 200) {
-        //     this.$message()
-        //   }
-        // })
-        axios
-          .post('http://localhost:8888/api/private/v1/login', this.form)
-          .then(res => {
-            const { meta, data } = res.data
-            if (meta.status === 200) {
-              // console.log(data)
-
-              localStorage.setItem('token', data.token)
-
-              this.$message({
-                message: meta.msg,
-                type: 'success',
-                duration: 1000
-              })
-              this.$router.push('/index')
-              // console.log(this.$route)
-            } else {
-              this.$message.error(meta.msg)
-            }
+    async login () {
+      try {
+        await this.$refs.form.validate()
+        const { meta, data } = await this.$axios.post('login', this.form)
+        if (meta.status === 200) {
+          localStorage.setItem('token', data.token)
+          this.$message({
+            message: meta.msg,
+            type: 'success',
+            duration: 1000
           })
-      })
+          this.$router.push('/index')
+        } else {
+          this.$message.error(meta.msg)
+        }
+      } catch (e) {
+        console.log(e)
+      }
     }
   }
 }
