@@ -42,7 +42,13 @@
             icon="el-icon-delete"
             size="small"
           ></el-button>
-          <el-button type="success" plain icon="el-icon-check" size="small">分配角色</el-button>
+          <el-button
+            type="success"
+            plain
+            icon="el-icon-check"
+            size="small"
+            @click="showAllocationDialog(obj.row)"
+          >分配角色</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -58,7 +64,7 @@
     ></el-pagination>
 
     <!-- 添加模态框 -->
-    <el-dialog title="添加用户" :visible.sync="dialogVisible" width="40%" @close = "closeDialog">
+    <el-dialog title="添加用户" :visible.sync="dialogVisible" width="40%" @close="closeDialog">
       <el-form :rules="rules" ref="form" :model="form" label-width="80px">
         <el-form-item label="用户名" prop="username">
           <el-input placeholder="请输入用户名" v-model="form.username"></el-input>
@@ -78,6 +84,32 @@
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">取 消</el-button>
           <el-button @click="addUsers" type="primary">确 定</el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <!-- 分配模态框 -->
+    <el-dialog title="添加用户" :visible.sync="dialogAllocation" width="40%" @close="closeDialog">
+      <el-form :rules="rules" ref="form" :model="allocationForm" label-width="80px">
+        <el-form-item label="用户名">
+          <el-tag type="info">{{allocationForm.username}}</el-tag>
+        </el-form-item>
+        <el-form-item label="角色列表">
+          <el-select v-model="allocationForm.rid" placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+
+      <template v-slot:footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogAllocation = false">取 消</el-button>
+          <el-button @click="assignRole" type="primary">分 配</el-button>
         </span>
       </template>
     </el-dialog>
@@ -117,6 +149,7 @@ export default {
       total: 0,
       dialogVisible: false,
       editVisible: false,
+      dialogAllocation: false,
       form: {
         username: '',
         password: '',
@@ -170,7 +203,13 @@ export default {
         mobile: '',
         username: '',
         id: ''
-      }
+      },
+      allocationForm: {
+        id: '',
+        rid: '',
+        username: ''
+      },
+      options: []
     }
   },
   methods: {
@@ -268,7 +307,10 @@ export default {
       try {
         await this.$refs.editform.validate()
         const { id, email, mobile } = this.editForm
-        const { meta } = await this.$axios.put(`users/${id}`, { email, mobile })
+        const { meta } = await this.$axios.put(`users/${id}`, {
+          email,
+          mobile
+        })
         // console.log(res)
 
         if (meta.status === 200) {
@@ -281,6 +323,38 @@ export default {
       } catch (e) {
         console.log(e)
       }
+    },
+    async showAllocationDialog (row) {
+      // console.log(row)
+      this.allocationForm.username = row.username
+      this.allocationForm.id = row.id
+      this.dialogAllocation = true
+      // 发送ajax获得rid
+      const res = await this.$axios.get(`users/${row.id}`)
+      console.log(res)
+      if (res.meta.status === 200) {
+        this.allocationForm.rid = res.data.rid === -1 ? '' : res.data.rid
+      }
+
+      // 发送axios请求
+      const { meta, data } = await this.$axios.get('roles')
+      if (meta.status === 200) {
+        this.options = data
+      }
+    },
+    async assignRole () {
+      const { id, rid } = this.allocationForm
+      if (rid === '') {
+        this.$message.error('请选择角色')
+      }
+      const { meta } = await this.$axios.put(`users/${id}/role`, { rid })
+      if (meta.status === 200) {
+        this.$message.success(meta.msg)
+        this.dialogAllocation = false
+        this.getUserList()
+      } else {
+        this.$message.error(meta.msg)
+      }
     }
   }
 }
@@ -288,7 +362,6 @@ export default {
 
 <style lang='scss' scoped>
 .users {
-
   .input-with-select {
     width: 300px;
     margin-bottom: 20px;
