@@ -16,40 +16,23 @@
         <el-menu
           router
           unique-opened
-          default-active="1-1"
+          :default-active="defaultActive"
           class="el-menu-vertical-demo"
           background-color="#545c64"
           text-color="#fff"
           active-text-color="#ffd04b"
         >
           <!-- 子菜单 -->
-          <el-submenu index="1">
+          <el-submenu :index="menu.path" v-for="menu in menuList" :key="menu.id">
             <!-- 标题 -->
             <template slot="title">
               <i class="el-icon-location"></i>
-              <span>用户管理</span>
+              <span>{{menu.authName}}</span>
             </template>
             <!-- 内容 -->
-            <el-menu-item index="users">
+            <el-menu-item :index="item.path" v-for="item in menu.children" :key="item.id">
               <i class="el-icon-menu"></i>
-              <span slot="title">用户列表</span>
-            </el-menu-item>
-          </el-submenu>
-
-          <el-submenu index="2">
-            <!-- 标题 -->
-            <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>权限管理</span>
-            </template>
-            <!-- 内容 -->
-            <el-menu-item index="roles">
-              <i class="el-icon-menu"></i>
-              <span slot="title">角色列表</span>
-            </el-menu-item>
-            <el-menu-item index="rights">
-              <i class="el-icon-menu"></i>
-              <span slot="title">权限列表</span>
+              <span slot="title">{{item.authName}}</span>
             </el-menu-item>
           </el-submenu>
         </el-menu>
@@ -63,14 +46,37 @@
 
 <script>
 export default {
+  computed: {
+    defaultActive () {
+      return this.$route.path.slice(1)
+    }
+  },
+  data () {
+    return {
+      menuList: []
+    }
+  },
+  async created () {
+    const { meta, data } = await this.$axios.get('menus')
+    if (meta.status === 200) {
+      this.menuList = data
+      console.log(this.menuList)
+    } else {
+      this.$message.error(meta.msg)
+    }
+  },
   methods: {
     async logout () {
       try {
-        const res = await this.$confirm('尊敬的用户,您确认要推出吗？', '温馨提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        })
+        const res = await this.$confirm(
+          '尊敬的用户,您确认要推出吗？',
+          '温馨提示',
+          {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }
+        )
         if (res) {
           localStorage.removeItem('token')
           this.$router.push('/login')
@@ -123,8 +129,8 @@ export default {
       border: 0;
     }
   }
-  .el-main{
-    background: #ecf0f1
+  .el-main {
+    background: #ecf0f1;
   }
 }
 </style>
