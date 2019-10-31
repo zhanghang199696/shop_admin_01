@@ -48,7 +48,7 @@
 export default {
   computed: {
     defaultActive () {
-      return this.$route.path.slice(1)
+      return this.$route.path.slice(1).split('A')[0]
     }
   },
   data () {
