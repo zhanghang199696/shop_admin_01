@@ -6,7 +6,7 @@ import User from '../components/users/Users.vue'
 import Rights from '../components/rights/Rights.vue'
 import Roles from '../components/rights/Roles.vue'
 import Goods from '../components/products/goods.vue'
-import Categories from '../components/products/categories.vue'
+import Categories from '../components/products/Categories.vue'
 
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push (location) {

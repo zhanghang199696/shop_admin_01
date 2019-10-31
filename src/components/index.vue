@@ -60,7 +60,6 @@ export default {
     const { meta, data } = await this.$axios.get('menus')
     if (meta.status === 200) {
       this.menuList = data
-      console.log(this.menuList)
     } else {
       this.$message.error(meta.msg)
     }
